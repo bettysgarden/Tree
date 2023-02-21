@@ -4,29 +4,29 @@ package node.entity;
  * Класс для хранения данных дерева
  */
 public class Node {
-    private long id;
-    private long parentId;
+    private Long id;
+    private Long parentId;
     private String value;
 
     public Node() {
     }
 
-    public Node(long parent, String value) {
+    public Node(Long parent, String value) {
         this.value = value;
         this.parentId = parent;
     }
 
-    public Node(long id, long parent, String value) {
+    public Node(Long id, Long parent, String value) {
         this.id = id;
         this.value = value;
         this.parentId = parent;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -38,17 +38,17 @@ public class Node {
         this.value = value;
     }
 
-    public long getParentId() {
+    public Long getParentId() {
         return parentId;
     }
 
-    public void setParentId(long parentId) {
+    public void setParentId(Long parentId) {
         this.parentId = parentId;
     }
 
     @Override
     public String toString() {
-        return " (" + id + ")  " + value;
+        return "(" + id + ")  " + value;
     }
 }
 

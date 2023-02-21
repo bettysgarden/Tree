@@ -3,6 +3,7 @@ package node.dao;
 import node.entity.*;
 import node.exception.NodeDaoException;
 
+import java.sql.SQLException;
 import java.util.List;
 /**
 * DAO — это Data Access Object — объект доступа к данным.
@@ -19,7 +20,10 @@ public interface NodeDAO {
     void deleteNode(Long nodeId) throws NodeDaoException;
     // Вывод дерева
     List<Node> listNodes() throws NodeDaoException;
+//    void createTable() throws SQLException;
+//    void dropTable() throws SQLException;
 
 
 
-}
+
+    }

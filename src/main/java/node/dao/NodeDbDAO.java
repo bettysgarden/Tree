@@ -4,12 +4,16 @@ import node.entity.Node;
 import node.exception.NodeDaoException;
 
 import java.sql.*;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class NodeDbDAO extends DbDAO implements NodeDAO {
     private static final String SELECT
-            = "SELECT id, parent_id, value FROM \"Node\" ORDER BY parent_id, id, value";
+            = "SELECT id, parent_id, value FROM \"Node\" WHERE parent_id=?";
+    private static final String SELECT_IS_NULL
+            = "SELECT id, parent_id, value FROM \"Node\" WHERE parent_id IS NULL";
     private static final String INSERT
             = "INSERT INTO \"Node\" (parent_id, value) VALUES (?, ?)";
     private static final String UPDATE
@@ -23,7 +27,11 @@ public class NodeDbDAO extends DbDAO implements NodeDAO {
         try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(INSERT, new String[]{"id"})) {
             Long nodeId = -1L;
-            pst.setLong(1, node.getParentId());
+            if (node.getParentId() == null) {
+                pst.setNull(1, Types.INTEGER);
+            } else {
+                pst.setLong(1, node.getParentId());
+            }
             pst.setString(2, node.getValue());
             pst.executeUpdate();
             ResultSet gk = pst.getGeneratedKeys();
@@ -59,17 +67,62 @@ public class NodeDbDAO extends DbDAO implements NodeDAO {
             throw new NodeDaoException(e);
         }
     }
+//    @Override
+//    public List<Node> listNodes() throws NodeDaoException {
+////        return null;
+//        List<Node> list = new LinkedList<>();
+//        try (Connection con = getConnection();
+//             PreparedStatement pst = con.prepareStatement(SELECT);
+//             ResultSet rs = pst.executeQuery()) {
+//            while (rs.next()) {
+//                list.add(fillNode(rs));
+//            }
+//            rs.close();
+//        } catch (Exception e) {
+//            throw new NodeDaoException(e);
+//        }
+//        return list;
+//    }
     @Override
     public List<Node> listNodes() throws NodeDaoException {
 //        return null;
         List<Node> list = new LinkedList<>();
-        try (Connection con = getConnection();
-             PreparedStatement pst = con.prepareStatement(SELECT);
-             ResultSet rs = pst.executeQuery()) {
-            while (rs.next()) {
-                list.add(fillNode(rs));
+        try (Connection con = getConnection()) {
+
+            Set<Long> parentIdSet = new HashSet<>();
+            parentIdSet.add(null);
+            Set<Long> temp = new HashSet<>();
+            PreparedStatement pst;
+            String level = "+++ ";
+            int count = 0;
+
+            while (!parentIdSet.isEmpty()){
+                for (Long parentId :
+                        parentIdSet) {
+                    if (parentId == null) {
+                        pst = con.prepareStatement(SELECT_IS_NULL);
+                    } else {
+                        pst = con.prepareStatement(SELECT);
+                        pst.setLong(1, parentId);
+                    }
+                    ResultSet rs = pst.executeQuery();
+                    while (rs.next()) {
+                        Node node = fillNode(rs);
+                        System.out.println();
+                        for (int i = 0; i < count; i++) {
+                            System.out.print(level);
+                        }
+                        System.out.print(node.toString());
+                        temp.add(node.getId());
+                    }
+                    rs.close();
+                }
+                parentIdSet.clear();
+                parentIdSet.addAll(temp);
+                temp.clear();
+                count++;
             }
-            rs.close();
+
         } catch (Exception e) {
             throw new NodeDaoException(e);
         }
@@ -82,25 +135,5 @@ public class NodeDbDAO extends DbDAO implements NodeDAO {
         node.setParentId(rs.getLong("parent_id"));
         node.setValue(rs.getString("value"));
         return node;
-    }
-
-    public void addListOfNodes() throws NodeDaoException {
-        try (Connection con = getConnection();
-             PreparedStatement stmt = con.prepareStatement(
-                     "INSERT INTO \"Node\" (id, parent_id, value) VALUES (?, ?, ?)")) {
-            for (int i = 0; i < 10; i++) {
-                // Заполняем параметры запроса
-                stmt.setString(1, "p" + i);
-                stmt.setString(2, "LastNAme_" + i);
-                stmt.setString(3, "phone_" + i);
-                // Запрос не выполняется, а укладывается в буфер,
-                //  который потом выполняется сразу для всех команд
-                stmt.addBatch();
-            }
-// Выполняем все запросы разом
-            int[] results = stmt.executeBatch();
-        } catch (Exception e) {
-            throw new NodeDaoException(e);
-        }
     }
 }
