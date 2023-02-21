@@ -23,7 +23,7 @@ public class DbDAO {
         try (Connection connection = getConnection();
              Statement stmt = connection.createStatement();
         ) {
-            String sql = "CREATE TABLE \"Node\" " +
+            String sql = "CREATE TABLE IF NOT EXISTS \"Node\" " +
                     "(id SERIAL,\n" +
                     "parent_id INT,\n" +
                     "value VARCHAR(50) NOT NULL,\n" +
