@@ -48,36 +48,6 @@ public class NodeManager {
     // Отобразить дерево
     public void listNodes() throws NodeBusinessException {
         try {
-//            List<Node> nodes = dao.listNodes();
-//            HashMap<Long, Set<Node>> parentChildren = new HashMap<>();
-//            nodes.forEach(node -> {
-//                        if (parentChildren.containsKey(node.getParentId()))
-//                            parentChildren.get(node.getParentId()).add(node);
-//                        else {
-//                            Set<Node> childrenSet = new HashSet<>();
-//                            childrenSet.add(node);
-//                            parentChildren.put(node.getParentId(), childrenSet);
-//                        }
-//                    });
-//            Set<Long> childrenSet = new HashSet<>();
-//            // childrenSet.add(null);
-//            Set<Node> set = new HashSet<>(parentChildren.get(null));
-//            set.forEach(node -> {
-//                System.out.println(node.toString());
-//                childrenSet.add(node.getId());
-//            }
-//            );
-
-//            parentChildren.entrySet().stream().forEach(pair -> {
-//                if (childrenSet.contains(pair.getKey())) {
-////                    parentChildren.entrySet().stream().forEach(pairIn -> {
-////
-////                    });
-//                    pair.getValue().forEach(node -> System.out.println(node.toString()));
-//                }
-//            });
-
-
             dao.listNodes();
         } catch (NodeDaoException ex) {
             throw new NodeBusinessException(ex);

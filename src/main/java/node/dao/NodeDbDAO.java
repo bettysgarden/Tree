@@ -27,6 +27,7 @@ public class NodeDbDAO extends DbDAO implements NodeDAO {
         try (Connection con = getConnection();
              PreparedStatement pst = con.prepareStatement(INSERT, new String[]{"id"})) {
             Long nodeId = -1L;
+
             if (node.getParentId() == null) {
                 pst.setNull(1, Types.INTEGER);
             } else {
